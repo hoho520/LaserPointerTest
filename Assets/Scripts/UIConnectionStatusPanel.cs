@@ -21,12 +21,9 @@ public class UIConnectionStatusPanel : MonoBehaviour
     private Button _logOutButton;
     [SerializeField]
     private Button _screenShareOpenButton;
-    [SerializeField]
-    private PlaygroundSceneController _sceneController;
     #endregion //SerializeField
 
     private Transform _nameTextFollowTransform;
-    private ThirdPersonController _thirdPersonController;
 
     private void Awake()
     {
@@ -45,7 +42,7 @@ public class UIConnectionStatusPanel : MonoBehaviour
     {
         if (_nameTextFollowTransform == null)
         {
-            _nameTextFollowTransform = _sceneController != null ? _sceneController.FollowUITargetTransform : null;
+            _nameTextFollowTransform = PlaygroundSceneController.IsAvailable ? PlaygroundSceneController.Instance.FollowUITargetTransform : null;
         }
 
         _connectionStatusText.text = PUN2ConnectionManager.Instance.GetConnectionState();
@@ -68,9 +65,6 @@ public class UIConnectionStatusPanel : MonoBehaviour
         {
             PUN2ConnectionManager.Instance.OnRefreshPlayerListCallback -= OnRefreshPlayerList;
         }
-
-        if (_thirdPersonController != null)
-            _thirdPersonController.OnShowScreenShare -= _sceneController.ShowScreenShare;
     }
 
     private void FixedUpdate()
@@ -88,14 +82,6 @@ public class UIConnectionStatusPanel : MonoBehaviour
         _nameTextFollowTransform = null;
         _logOutButton.onClick.RemoveListener(OnClickLogOutButton);
         _screenShareOpenButton.onClick.RemoveListener(OnClickScreenShareOpenButton);
-    }
-
-    public void SetThirdPersonController(ThirdPersonController controller)
-    {
-        _thirdPersonController = controller;
-
-        _thirdPersonController.OnShowScreenShare -= _sceneController.ShowScreenShare;
-        _thirdPersonController.OnShowScreenShare += _sceneController.ShowScreenShare;
     }
 
     private void OnRefreshPlayerList(Player[] players)
@@ -122,6 +108,6 @@ public class UIConnectionStatusPanel : MonoBehaviour
 
     private void OnClickScreenShareOpenButton()
     {
-        _thirdPersonController.OnClickScreenShareButton();
+        PlaygroundSceneController.Instance.ThirdPersonController.OnClickScreenShareButton(true);
     }
 }

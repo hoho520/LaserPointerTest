@@ -25,7 +25,6 @@ public class UIScreenSharePanel : MonoBehaviour
     private int _currentLaserCursorIndex = -1;
     private Vector2 _originCursorPoint;
     private Vector2 _laserCursorPoint;
-    private Action<bool> _onScreenShareActiveCallback;
     private Texture2D _originCursorTexture;
     private Texture2D _currentLaserCursorTexture;
     private Texture2D[] _laserCursorTextures = null;
@@ -77,29 +76,20 @@ public class UIScreenSharePanel : MonoBehaviour
 
     private void OnDestroy()
     {
-        _quitButton.onClick.RemoveListener(OnHideScreenShare);
+        if (_quitButton.onClick.GetPersistentEventCount() > 0)
+        {
+            _quitButton.onClick.RemoveListener(OnHideScreenShare);
+        }
     }
 
-    public void SetScreenShareActiveAction(Action<bool> callback)
+    private void OnHideScreenShare()
     {
-        _onScreenShareActiveCallback = callback;
+        PlaygroundSceneController.Instance.ThirdPersonController.OnClickScreenShareButton(false);
     }
 
-    public void OnShowScreenShare()
+    public void SetDefaultCursor()
     {
-        Cursor.lockState = CursorLockMode.Confined;
-
-        gameObject.SetActive(true);
-        _onScreenShareActiveCallback?.Invoke(true);        
-    }
-
-    public void OnHideScreenShare()
-    {
-        Cursor.lockState = CursorLockMode.None;
         Cursor.SetCursor(_originCursorTexture, _originCursorPoint, CursorMode.Auto);
-
-        gameObject.SetActive(false);
-        _onScreenShareActiveCallback?.Invoke(false);       
     }
 
     public void SetLaserCursor(int index)

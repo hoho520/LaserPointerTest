@@ -3,7 +3,7 @@ using Photon.Pun;
 using StarterAssets;
 using UnityEngine;
 
-public class PlaygroundSceneController : MonoBehaviour
+public class PlaygroundSceneController : MonoSingleton<PlaygroundSceneController>
 {    
     [SerializeField]
     private UICanvasControllerInput _canvasControllerInput;
@@ -16,7 +16,7 @@ public class PlaygroundSceneController : MonoBehaviour
 
     public Transform FollowUITargetTransform { get; private set; }
 
-    private ThirdPersonController _thirdPerson;
+    public ThirdPersonController ThirdPersonController { get; private set; }
 
     void Start()
     {
@@ -31,27 +31,39 @@ public class PlaygroundSceneController : MonoBehaviour
             return;
         }
 
-        _thirdPerson = player.GetComponent<ThirdPersonController>();
+        ThirdPersonController = player.GetComponent<ThirdPersonController>();
 
-        FollowUITargetTransform = _thirdPerson.FollowUITarget.transform;
+        FollowUITargetTransform = ThirdPersonController.FollowUITarget.transform;
 
-        _cinemachineVirtualCamera.Follow = _thirdPerson.CinemachineCameraTarget.transform;
-        _thirdPerson.SetLaserPointerParentPanel(_screenSharePanel.gameObject.transform);
+        _cinemachineVirtualCamera.Follow = ThirdPersonController.CinemachineCameraTarget.transform;
         _canvasControllerInput.SetStarterAssetsInputs(player.GetComponent<StarterAssetsInputs>());
-        _connectionStatusPanel.SetThirdPersonController(_thirdPerson);
 
-        _screenSharePanel.SetScreenShareActiveAction(OnSetScreenShareActive);
         _screenSharePanel.gameObject.SetActive(false);
     }
 
-    public void ShowScreenShare()
+    public void ShowScreenShare(bool isShow)
     {
-        _screenSharePanel.OnShowScreenShare();
+        if (isShow)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+
+            _screenSharePanel.gameObject.SetActive(true);
+            OnSetScreenShareActive(true);
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+
+            _screenSharePanel.SetDefaultCursor();
+            _screenSharePanel.gameObject.SetActive(false);
+
+            OnSetScreenShareActive(false);
+        }
     }
 
     private void OnSetScreenShareActive(bool isActive)
     {
-        if (_thirdPerson != null)
-            _thirdPerson.SetScreenShareActive(isActive);
+        if (ThirdPersonController != null)
+            ThirdPersonController.SetScreenShareActive(isActive);
     }
 }

@@ -122,10 +122,8 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private PhotonView _photonView;
-        private Transform _parentTransform;
 
         private const float _threshold = 0.01f;
-        public System.Action OnShowScreenShare { get; set; }
 
         private bool IsCurrentDeviceMouse
         {
@@ -184,8 +182,6 @@ namespace StarterAssets
 
             _photonView.Synchronization = ViewSynchronization.UnreliableOnChange;
             _photonView.ObservedComponents[0] = this;
-            _photonView.ObservedComponents[1] = this;
-            _photonView.ObservedComponents[2] = this;
         }
 
         private void Update()
@@ -231,11 +227,6 @@ namespace StarterAssets
         public void SetScreenShareActive(bool isActive)
         {
             _isScreenShareOpen = isActive;
-        }
-
-        public void SetLaserPointerParentPanel(Transform transform)
-        {
-            _parentTransform = transform;
         }
 
         private void AssignAnimationIDs()
@@ -476,16 +467,16 @@ namespace StarterAssets
             }
         }
 
-        public void OnClickScreenShareButton()
+        public void OnClickScreenShareButton(bool isShow)
         {
-            _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.All);
+            _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.All, isShow);
         }
 
         [PunRPC]
-        public void ShowScreenSharePanel_RPC(PhotonMessageInfo info)
+        private void ShowScreenSharePanel_RPC(bool isShow, PhotonMessageInfo info)
         {
-            Debug.Log($"ShowScreenSharePanel Called by RPC. Message Info => Sender : {info.Sender}, PhotonView : {info.photonView}, Callback Existing : {OnShowScreenShare != null}");
-            OnShowScreenShare?.Invoke();
+            Debug.Log($"ShowScreenSharePanel Called by RPC. Message Info => Sender : {info.Sender}, PhotonView : {info.photonView}, isShow : {isShow}");
+            PlaygroundSceneController.Instance.ShowScreenShare(isShow);
         }
 
     }
