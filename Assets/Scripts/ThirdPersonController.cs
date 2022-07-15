@@ -164,14 +164,14 @@ namespace StarterAssets
 
             AssignAnimationIDs();
 
-            GameObject laser = PhotonNetwork.Instantiate("LaserPointer", Vector3.zero, Quaternion.identity);
+            /*GameObject laser = PhotonNetwork.Instantiate("LaserPointer", Vector3.zero, Quaternion.identity);
             if (laser != null)
             {
                 laser.transform.SetParent(_parentTransform);
                 laser.transform.localPosition = Vector3.zero;
                 laser.transform.localRotation = Quaternion.identity;
                 laser.transform.localScale = Vector3.one;
-            }
+            }*/
 
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
@@ -190,11 +190,6 @@ namespace StarterAssets
 
         private void Update()
         {
-            if (!Cursor.visible)
-            {
-                Cursor.visible = true;
-            }
-
             if (_photonView.IsMine == false)
             {
                 // 수신된 좌표로 선형 보간 위치 이동 처리
@@ -486,21 +481,13 @@ namespace StarterAssets
             _onShowScreenShare -= callback;
             _onShowScreenShare += callback;
 
-            /*if (_photonView.IsMine)
-            {
-                ShowScreenSharePanel_RPC();
-            }
-            else
-            {
-                _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.OthersBuffered);
-            }*/
-            _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.AllViaServer);
+            _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.All);
         }
 
         [PunRPC]
-        public void ShowScreenSharePanel_RPC()
+        public void ShowScreenSharePanel_RPC(PhotonMessageInfo info)
         {
-            Debug.Log("ShowScreenSharePanel Called by RPC.");
+            Debug.Log($"ShowScreenSharePanel Called by RPC. Message Info => Sender : {info.Sender}, PhotonView : {info.photonView}, Callback Existing : {_onShowScreenShare != null}");
             _onShowScreenShare?.Invoke();
         }
 

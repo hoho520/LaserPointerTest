@@ -44,12 +44,6 @@ public class PlaygroundSceneController : MonoBehaviour
         _screenSharePanel.gameObject.SetActive(false);
     }
 
-    private void Update()
-    {
-        if (!Cursor.visible)
-            Cursor.visible = true;
-    }
-
     public void ShowScreenShare()
     {
         _screenSharePanel.OnShowScreenShare();
