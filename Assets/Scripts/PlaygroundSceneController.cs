@@ -14,6 +14,8 @@ public class PlaygroundSceneController : MonoSingleton<PlaygroundSceneController
     [SerializeField]
     private UIScreenSharePanel _screenSharePanel;
 
+    public bool IsScreenShareVisible => _screenSharePanel.gameObject.activeSelf;
+
     public Transform FollowUITargetTransform { get; private set; }
 
     public ThirdPersonController ThirdPersonController { get; private set; }
@@ -48,7 +50,6 @@ public class PlaygroundSceneController : MonoSingleton<PlaygroundSceneController
             Cursor.lockState = CursorLockMode.Confined;
 
             _screenSharePanel.gameObject.SetActive(true);
-            OnSetScreenShareActive(true);
         }
         else
         {
@@ -56,14 +57,11 @@ public class PlaygroundSceneController : MonoSingleton<PlaygroundSceneController
 
             _screenSharePanel.SetDefaultCursor();
             _screenSharePanel.gameObject.SetActive(false);
-
-            OnSetScreenShareActive(false);
         }
     }
 
-    private void OnSetScreenShareActive(bool isActive)
+    public void SetLaserPointerTransform(bool isShow, Vector2? position)
     {
-        if (ThirdPersonController != null)
-            ThirdPersonController.SetScreenShareActive(isActive);
+        _screenSharePanel.SetLaserPointerTransform(isShow, position);
     }
 }

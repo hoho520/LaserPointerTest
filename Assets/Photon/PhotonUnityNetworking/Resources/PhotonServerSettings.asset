@@ -41,6 +41,7 @@ MonoBehaviour:
   - RespawnSpaceship
   - ShowLaserPointer
   - ShowScreenSharePanel_RPC
+  - SetLaserPointerTransform_RPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

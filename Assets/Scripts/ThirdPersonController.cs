@@ -85,7 +85,6 @@ namespace StarterAssets
         private float _syncSmoothingDelay = 5f;
 
         private bool _hasAnimator;
-        private bool _isScreenShareOpen;
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -162,15 +161,6 @@ namespace StarterAssets
 
             AssignAnimationIDs();
 
-            /*GameObject laser = PhotonNetwork.Instantiate("LaserPointer", Vector3.zero, Quaternion.identity);
-            if (laser != null)
-            {
-                laser.transform.SetParent(_parentTransform);
-                laser.transform.localPosition = Vector3.zero;
-                laser.transform.localRotation = Quaternion.identity;
-                laser.transform.localScale = Vector3.one;
-            }*/
-
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
@@ -186,18 +176,18 @@ namespace StarterAssets
 
         private void Update()
         {
+            if (PlaygroundSceneController.Instance.IsScreenShareVisible == true)
+            {
+                // 화면 공유가 열린 상태에서는 캐릭터 이동을 금한다.
+                CheckMouseInputInScreenShare();
+            }
+
             if (_photonView.IsMine == false)
             {
                 // 수신된 좌표로 선형 보간 위치 이동 처리
                 transform.position = Vector3.Lerp(transform.position, _receivedPos, Time.deltaTime * _syncSmoothingDelay);
                 // 수신된 좌표로 구면 선형 보간 회전 처리
                 transform.rotation = Quaternion.Slerp(transform.rotation, _receivedRot, Time.deltaTime * _syncSmoothingDelay);
-                return;
-            }
-            
-            if (_isScreenShareOpen == true)
-            {
-                // 화면 공유가 열린 상태에서는 캐릭터 이동을 금한다.
                 return;
             }
 
@@ -215,18 +205,13 @@ namespace StarterAssets
                 return;
             }
 
-            if (_isScreenShareOpen == true)
+            if (PlaygroundSceneController.Instance.IsScreenShareVisible == true)
             {
                 // 화면 공유가 열린 상태에서는 카메라 회전을 금한다.
                 return;
             }
 
             CameraRotation();
-        }
-
-        public void SetScreenShareActive(bool isActive)
-        {
-            _isScreenShareOpen = isActive;
         }
 
         private void AssignAnimationIDs()
@@ -411,6 +396,20 @@ namespace StarterAssets
             }
         }
 
+        private void CheckMouseInputInScreenShare()
+        {
+            if (Mouse.current.leftButton.wasReleasedThisFrame)
+            {
+                OnReleaseMouse();
+                return;
+            }
+
+            if (Mouse.current.leftButton.isPressed)
+            {
+                OnPressMouse(Mouse.current.position.ReadValue());
+            }
+        }
+
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
             if (lfAngle < -360f) lfAngle += 360f;
@@ -472,6 +471,16 @@ namespace StarterAssets
             _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.All, isShow);
         }
 
+        public void OnPressMouse(Vector2 position)
+        {
+            _photonView.RPC("SetLaserPointerTransform_RPC", RpcTarget.All, true, position);
+        }
+
+        public void OnReleaseMouse()
+        {
+            _photonView.RPC("SetLaserPointerTransform_RPC", RpcTarget.All, false, Vector2.zero);
+        }
+
         [PunRPC]
         private void ShowScreenSharePanel_RPC(bool isShow, PhotonMessageInfo info)
         {
@@ -479,5 +488,13 @@ namespace StarterAssets
             PlaygroundSceneController.Instance.ShowScreenShare(isShow);
         }
 
+        [PunRPC]
+        private void SetLaserPointerTransform_RPC(bool isShow, Vector2 position, PhotonMessageInfo info)
+        {
+            if (_photonView.IsMine == true)
+                return;
+            Debug.Log($"SetLaserPointerTransform Called by RPC. Message Info => Sender : {info.Sender}, PhotonView : {info.photonView}, isShow : {isShow}, Position : {position}");
+            PlaygroundSceneController.Instance.SetLaserPointerTransform(isShow, position);
+        }
     }
 }

@@ -12,6 +12,8 @@ public class UIScreenSharePanel : MonoBehaviour
 
     [SerializeField]
     private Button _quitButton;
+    [SerializeField]
+    private LaserPointer _laserPointer;
 
     public bool IsScreenShareActive
     {
@@ -47,6 +49,8 @@ public class UIScreenSharePanel : MonoBehaviour
 
         _originCursorPoint = new Vector2(_originCursorTexture.width / 4, _originCursorTexture.height / 6);
         _laserCursorPoint = new Vector2(_currentLaserCursorTexture.width / 2, _currentLaserCursorTexture.height / 2);
+
+        _laserPointer.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -101,5 +105,18 @@ public class UIScreenSharePanel : MonoBehaviour
         }
 
         Cursor.SetCursor(_currentLaserCursorTexture, _laserCursorPoint, CursorMode.Auto);
+    }
+
+    public void SetLaserPointerTransform(bool isShow, Vector2? position = null)
+    {
+        if (_laserPointer != null)
+        {
+            _laserPointer.gameObject.SetActive(isShow);
+
+            if (isShow && position.HasValue)
+            {
+                _laserPointer.SetPosition(position.Value);
+            }
+        }
     }
 }
