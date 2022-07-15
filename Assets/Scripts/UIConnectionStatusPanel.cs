@@ -68,6 +68,9 @@ public class UIConnectionStatusPanel : MonoBehaviour
         {
             PUN2ConnectionManager.Instance.OnRefreshPlayerListCallback -= OnRefreshPlayerList;
         }
+
+        if (_thirdPersonController != null)
+            _thirdPersonController.OnShowScreenShare -= _sceneController.ShowScreenShare;
     }
 
     private void FixedUpdate()
@@ -90,6 +93,9 @@ public class UIConnectionStatusPanel : MonoBehaviour
     public void SetThirdPersonController(ThirdPersonController controller)
     {
         _thirdPersonController = controller;
+
+        _thirdPersonController.OnShowScreenShare -= _sceneController.ShowScreenShare;
+        _thirdPersonController.OnShowScreenShare += _sceneController.ShowScreenShare;
     }
 
     private void OnRefreshPlayerList(Player[] players)
@@ -116,6 +122,6 @@ public class UIConnectionStatusPanel : MonoBehaviour
 
     private void OnClickScreenShareOpenButton()
     {
-        _thirdPersonController.OnClickScreenShareButton(_sceneController.ShowScreenShare);
+        _thirdPersonController.OnClickScreenShareButton();
     }
 }

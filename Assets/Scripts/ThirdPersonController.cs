@@ -125,7 +125,7 @@ namespace StarterAssets
         private Transform _parentTransform;
 
         private const float _threshold = 0.01f;
-        private System.Action _onShowScreenShare;
+        public System.Action OnShowScreenShare { get; set; }
 
         private bool IsCurrentDeviceMouse
         {
@@ -476,19 +476,16 @@ namespace StarterAssets
             }
         }
 
-        public void OnClickScreenShareButton(System.Action callback)
+        public void OnClickScreenShareButton()
         {
-            _onShowScreenShare -= callback;
-            _onShowScreenShare += callback;
-
             _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.All);
         }
 
         [PunRPC]
         public void ShowScreenSharePanel_RPC(PhotonMessageInfo info)
         {
-            Debug.Log($"ShowScreenSharePanel Called by RPC. Message Info => Sender : {info.Sender}, PhotonView : {info.photonView}, Callback Existing : {_onShowScreenShare != null}");
-            _onShowScreenShare?.Invoke();
+            Debug.Log($"ShowScreenSharePanel Called by RPC. Message Info => Sender : {info.Sender}, PhotonView : {info.photonView}, Callback Existing : {OnShowScreenShare != null}");
+            OnShowScreenShare?.Invoke();
         }
 
     }
