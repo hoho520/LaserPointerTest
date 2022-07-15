@@ -5,9 +5,6 @@ using UnityEngine.UI;
 
 public class LaserPointer : MonoBehaviour
 {
-    private const float MAX_X = 850f;
-    private const float MAX_Y = 430f;
-
     [SerializeField]
     private RectTransform _rectTransform;
     [SerializeField]
@@ -22,15 +19,25 @@ public class LaserPointer : MonoBehaviour
     {
         float x = position.x;
         float y = position.y;
-        if (x > MAX_X || x < (MAX_X * -1f))
+        if (x > Screen.width)
         {
-            x = MAX_X;
+            x = Screen.width;
+        }
+        else if (x < Screen.width * -1f)
+        {
+            x = Screen.width * -1f;
         }
 
-        if (y > MAX_Y || y < (MAX_Y * -1f))
+        if (y > Screen.height)
         {
-            y = MAX_Y;
+            y = Screen.height;
         }
+        else if (y < Screen.height * -1f)
+        {
+            y = Screen.height * -1f;
+        }
+
+        Debug.Log($"Laser Pointer Position ( {x}, {y} )");
 
         _rectTransform.position = new Vector3(x, y, 0f);
     }

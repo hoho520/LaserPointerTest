@@ -491,10 +491,8 @@ namespace StarterAssets
         [PunRPC]
         private void SetLaserPointerTransform_RPC(bool isShow, Vector2 position, PhotonMessageInfo info)
         {
-            if (_photonView.IsMine == true)
-                return;
             Debug.Log($"SetLaserPointerTransform Called by RPC. Message Info => Sender : {info.Sender}, PhotonView : {info.photonView}, isShow : {isShow}, Position : {position}");
-            PlaygroundSceneController.Instance.SetLaserPointerTransform(isShow, position);
+            PlaygroundSceneController.Instance.SetLaserPointerTransform(_photonView.IsMine, position);
         }
     }
 }
