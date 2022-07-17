@@ -36,9 +36,9 @@ public class LaserPointer : MonoBehaviour
         {
             y = Screen.height * -1f;
         }
-
+#if UNITY_EDITOR
         Debug.Log($"Laser Pointer Position ( {x}, {y} )");
-
+#endif //UNITY_EDITOR
         _rectTransform.position = new Vector3(x, y, 0f);
     }
 }

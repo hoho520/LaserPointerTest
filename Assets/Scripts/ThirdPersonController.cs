@@ -15,6 +15,9 @@ namespace StarterAssets
 #endif
     public class ThirdPersonController : MonoBehaviourPunCallbacks, IPunObservable
     {
+        private readonly string SHOW_SCREEN_SHARE_PANEL_RPC_METHOD = "ShowScreenSharePanel_RPC";
+        private readonly string SET_LASER_POINTER_TRANSFORM_RPC_METHOD = "SetLaserPointerTransform_RPC";
+
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -468,30 +471,34 @@ namespace StarterAssets
 
         public void OnClickScreenShareButton(bool isShow)
         {
-            _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.All, isShow);
+            _photonView.RPC(SHOW_SCREEN_SHARE_PANEL_RPC_METHOD, RpcTarget.All, isShow);
         }
 
         public void OnPressMouse(Vector2 position)
         {
-            _photonView.RPC("SetLaserPointerTransform_RPC", RpcTarget.All, true, position);
+            _photonView.RPC(SET_LASER_POINTER_TRANSFORM_RPC_METHOD, RpcTarget.All, true, position);
         }
 
         public void OnReleaseMouse()
         {
-            _photonView.RPC("SetLaserPointerTransform_RPC", RpcTarget.All, false, Vector2.zero);
+            _photonView.RPC(SET_LASER_POINTER_TRANSFORM_RPC_METHOD, RpcTarget.All, false, Vector2.zero);
         }
 
         [PunRPC]
         private void ShowScreenSharePanel_RPC(bool isShow, PhotonMessageInfo info)
         {
+#if UNITY_EDITOR
             Debug.Log($"ShowScreenSharePanel Called by RPC. Message Info => Sender : {info.Sender}, PhotonView : {info.photonView}, isShow : {isShow}");
+#endif //UNITY_EDITOR
             PlaygroundSceneController.Instance.ShowScreenShare(isShow);
         }
 
         [PunRPC]
         private void SetLaserPointerTransform_RPC(bool isShow, Vector2 position, PhotonMessageInfo info)
         {
+#if UNITY_EDITOR
             Debug.Log($"SetLaserPointerTransform Called by RPC. Message Info => Sender : {info.Sender}, PhotonView : {info.photonView}, isShow : {isShow}, Position : {position}");
+#endif //UNITY_EDITOR
             PlaygroundSceneController.Instance.SetLaserPointerTransform(_photonView.IsMine, position);
         }
     }

@@ -14,7 +14,16 @@ public class PlaygroundSceneController : MonoSingleton<PlaygroundSceneController
     [SerializeField]
     private UIScreenSharePanel _screenSharePanel;
 
-    public bool IsScreenShareVisible => _screenSharePanel.gameObject.activeSelf;
+    public bool IsScreenShareVisible
+    {
+        get
+        {
+            if (_screenSharePanel == null)
+                return false;
+
+            return _screenSharePanel.gameObject.activeSelf;
+        }
+    }        
 
     public Transform FollowUITargetTransform { get; private set; }
 
