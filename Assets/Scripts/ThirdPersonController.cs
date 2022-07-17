@@ -468,38 +468,17 @@ namespace StarterAssets
 
         public void OnClickScreenShareButton(bool isShow)
         {
-            if (PUN2ConnectionManager.Instance.CurrentPlayerCount > 1)
-            {
-                _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.All, isShow);
-            }
-            else
-            {
-                PlaygroundSceneController.Instance.ShowScreenShare(isShow);
-            }
+            _photonView.RPC("ShowScreenSharePanel_RPC", RpcTarget.All, isShow);
         }
 
         public void OnPressMouse(Vector2 position)
         {
-            if (PUN2ConnectionManager.Instance.CurrentPlayerCount > 1)
-            {
-                _photonView.RPC("SetLaserPointerTransform_RPC", RpcTarget.All, true, position);
-            }
-            else
-            {
-                PlaygroundSceneController.Instance.SetLaserPointerTransform(true, position);
-            }
+            _photonView.RPC("SetLaserPointerTransform_RPC", RpcTarget.All, true, position);
         }
 
         public void OnReleaseMouse()
         {
-            if (PUN2ConnectionManager.Instance.CurrentPlayerCount > 1)
-            {
-                _photonView.RPC("SetLaserPointerTransform_RPC", RpcTarget.All, false, Vector2.zero);
-            }
-            else
-            {
-                PlaygroundSceneController.Instance.SetLaserPointerTransform(false, null);
-            }
+            _photonView.RPC("SetLaserPointerTransform_RPC", RpcTarget.All, false, Vector2.zero);
         }
 
         [PunRPC]
