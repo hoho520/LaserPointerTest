@@ -23,8 +23,6 @@ public class UIConnectionStatusPanel : MonoBehaviour
     private Button _screenShareOpenButton;
     #endregion //SerializeField
 
-    private Transform _nameTextFollowTransform;
-
     private void Awake()
     {
         if (_logOutButton.onClick.GetPersistentEventCount() == 0)
@@ -40,11 +38,6 @@ public class UIConnectionStatusPanel : MonoBehaviour
 
     private void Start()
     {
-        if (_nameTextFollowTransform == null)
-        {
-            _nameTextFollowTransform = PlaygroundSceneController.IsAvailable ? PlaygroundSceneController.Instance.FollowUITargetTransform : null;
-        }
-
         _connectionStatusText.text = PUN2ConnectionManager.Instance.GetConnectionState();
         _playerNameText.text = PUN2ConnectionManager.Instance.PlayerNickName;
 
@@ -69,17 +62,16 @@ public class UIConnectionStatusPanel : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (CameraManager.Instance.MainCamera == null || _nameTextFollowTransform == null)
+        if (CameraManager.Instance.MainCamera == null || PlaygroundSceneController.Instance.FollowUITargetTransform == null)
             return;
 
-        Vector2 screenPos = CameraManager.Instance.MainCamera.WorldToScreenPoint(_nameTextFollowTransform.transform.position);
+        Vector2 screenPos = CameraManager.Instance.MainCamera.WorldToScreenPoint(PlaygroundSceneController.Instance.FollowUITargetTransform.transform.position);
 
         _playerNameRectTransform.position = screenPos;
     }
 
     private void OnDestroy()
     {
-        _nameTextFollowTransform = null;
         _logOutButton.onClick.RemoveListener(OnClickLogOutButton);
         _screenShareOpenButton.onClick.RemoveListener(OnClickScreenShareOpenButton);
     }
